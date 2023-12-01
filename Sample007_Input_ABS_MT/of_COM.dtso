@@ -1,0 +1,14 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+	fragment@0 {
+		target-path = "/";
+		
+		__overlay__ {
+			of_com: of_com {
+				compatible = "of_COM";
+			};
+		};
+	};
+};

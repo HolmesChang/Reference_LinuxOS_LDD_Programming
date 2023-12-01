@@ -1,0 +1,24 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+	fragment@0 {
+		target = < 0x30 >;
+		
+		__overlay__ {
+			status = "disabled";
+		};
+	};
+	
+	fragment@1 {
+		target = < 0x27 >;
+		
+		__overlay__ {
+			my_spi: my_spi@1 {
+				compatible = "my_spi_driver";
+				reg = <0x01>;
+				spi-max-frequency = <0x7a1200>;
+			};
+		};
+	};
+};
