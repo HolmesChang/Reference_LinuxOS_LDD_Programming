@@ -137,7 +137,7 @@ static int __init Sample008_SYSFS_Init (void) {
 		
 		ret = PTR_ERR(my_device);
 		
-		goto err_class_create;
+		goto err_device_create;
 	}
 	
 	ret = sysfs_create_file(&my_device->kobj, &dev_attr_pcd_buf_size.attr);
