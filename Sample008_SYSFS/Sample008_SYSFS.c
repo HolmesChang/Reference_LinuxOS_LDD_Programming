@@ -144,7 +144,10 @@ static int __init Sample008_SYSFS_Init (void) {
 		goto err_device_create;
 	}
 	
-	ret = sysfs_create_file(&my_device->kobj, &dev_attr_pcd_buf_size.attr);
+	/* Create attribute node under my_device kobj*/
+	//ret = sysfs_create_file(&my_device->kobj, &dev_attr_pcd_buf_size.attr);
+	/* Create attribute node under my_class kobj*/
+	ret = sysfs_create_file(my_class->dev_kobj, &dev_attr_pcd_buf_size.attr);
 	if (ret != 0) {
 		pr_err("Creating SYSFS File: NG\n");
 	}
