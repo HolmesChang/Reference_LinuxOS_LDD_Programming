@@ -44,6 +44,8 @@ static struct input_dev * my_input;
 static uint8_t value;
 
 static irqreturn_t key_irq (int irq, void * data) {
+	pr_info("Begin\n");
+	
 	local_irq_save(irq_flag);
 	
 	pr_info("%s\n", ((char *) data));
@@ -64,6 +66,8 @@ static irqreturn_t key_irq (int irq, void * data) {
 	}
 	
 	local_irq_restore(irq_flag);
+	
+	pr_info("End\n");
 	
 	return IRQ_HANDLED;
 	//return 0;
