@@ -54,9 +54,9 @@ static irqreturn_t key_irq (int irq, void * data) {
 		if (value == 1) value = 0;
 		else value = 1;
 		
-		input_event(input, EV_KEY, BTN_0, value);
+		input_event(my_input, EV_KEY, BTN_0, value);
 		
-		input_sync(input);
+		input_sync(my_input);
 	}
 	
 	if (irq == key2_irq_no) {
