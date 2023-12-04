@@ -87,6 +87,8 @@ struct device * my_device;
 ssize_t pcd_buf_size_show (struct device * dev, struct device_attribute * attr, char * buf) {
 	pr_info("Begin\n");
 	
+	pr_info("End\n");
+	
 	return sprintf(buf, "%d\n", pcd_buf_size);
 }
 
@@ -94,6 +96,8 @@ ssize_t pcd_buf_size_store (struct device * dev, struct device_attribute * attr,
 	pr_info("Begin\n");
 	
 	sscanf(buf, "%d", &pcd_buf_size);
+	
+	pr_info("End\n");
 	
 	return count;
 }
