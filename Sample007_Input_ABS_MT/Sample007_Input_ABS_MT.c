@@ -1,11 +1,14 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
+#include <linux/moduleparam.h>
+#include <linux/stat.h>
 #include <linux/device.h>
 #include <linux/cdev.h>
+#include <linux/platform_device.h>
 #include <linux/fs.h>
 #include <linux/uaccess.h>
-#include <linux/platform_device.h>
+#include <linux/slab.h>
 #include <linux/of.h>
 #include <linux/of_device.h>
 #include <linux/gpio.h>
@@ -37,8 +40,8 @@ static unsigned long irq_flag;
 #define INPUT_DEVICE1_NAME	"KEY1"
 #define INPUT_DEVICE2_NAME	"KEY2"
 
-struct input_dev * input;
-uint8_t value;
+static struct input_dev * my_input;
+static uint8_t value;
 
 static irqreturn_t key_irq (int irq, void * data) {
 	local_irq_save(irq_flag);
@@ -66,22 +69,24 @@ static irqreturn_t key_irq (int irq, void * data) {
 	//return 0;
 }
 
-static int key_open (struct input_dev * input) {
-	pr_info("\n");
+static int my_input_open (struct input_dev * input) {
+	pr_info("Begin \n");
+	
+	pr_info("End\n");
 	
 	return 0;
 }
 
-static void key_close (struct input_dev * input) {
-	pr_info("\n");
+static void my_input_close (struct input_dev * input) {
+	pr_info("Begin\n");
+	
+	pr_info("End\n");
 }
 
-static int __init sample007_extint_init (void) {
+static int __init Sample007_EXTINT_Init (void) {
 	int ret;
 	
-	pr_info("Sample007_EXTINT\n");
-	
-	pr_info("GPIO Initialization: Begin\n");
+	pr_info("Begin\n");
 	
 	if(gpio_request(BUZZER_GPIO_NO, "BUZZER")) return -EACCES;
 	if(gpio_request(KEY1_GPIO_NO, "KEY1")) return -EACCES;
@@ -98,55 +103,53 @@ static int __init sample007_extint_init (void) {
 	key2_irq_no = gpio_to_irq(KEY2_GPIO_NO);
 	request_irq(key2_irq_no, key_irq, IRQF_TRIGGER_FALLING, KEY2_EXTINT_NAME, KEY2_DEVICE_NAME);
 	
-	pr_info("GPIO Initialization: End\n");
-	
-	pr_info("Input Device Initialization: Begin\n");
-	
 	value = 1;
 	
-	input = input_allocate_device();
-	if (input == NULL) {
-		pr_err("Allocation Input Device: NG\n");
+	my_input = input_allocate_device();
+	if (my_input == NULL) {
+		pr_err("input_allocate_device(): NG\n");
 		
 		return -ENOMEM;
 	}
 	
-	input->name			= INPUT_DEVICE1_NAME;
+	my_input->name			= INPUT_DEVICE1_NAME;
 	//input->phys = "INPUT_DEVICE1_PHYS";
-	input->open			= key_open;
-	input->close		= key_close;
-	set_bit(EV_KEY, input->evbit);
-	set_bit(BTN_0, input->keybit);
+	my_input->open			= my_input_open;
+	my_input->close			= my_input_close;
+	set_bit(EV_KEY, my_input->evbit);
+	set_bit(BTN_0, my_input->keybit);
 	//set_bit(EV_SYN, input->evbit);
 	//input->id.bustype	= BUS_HOST;
-	input->id.vendor	= 0x0001;
-	input->id.product	= 0x0002;
-	input->id.version	= 0x0003;
+	my_input->id.vendor		= 0x0001;
+	my_input->id.product	= 0x0002;
+	my_input->id.version	= 0x0003;
 	//input_set_capability(input, EV_KEY, BTN_0);
 	
-	ret = input_register_device(input);
-	if (ret != 0) {
-		pr_err("Input Device Registeration: NG\n");
+	ret = input_register_device(my_input);
+	if (ret) {
+		pr_err("input_register_device(my_input): NG\n");
 		
 		return ret;
 	}
 	
-	pr_info("Input Device Initialization: End\n");
+	pr_info("End\n");
 	
 	return 0;
 }
 
-static void __exit sample007_extint_exit (void) {
-	pr_info("Sample007_EXTINT\n");
+static void __exit Sample007_EXTINT_Exit (void) {
+	pr_info("Begin\n");
 	
-	input_unregister_device(input);
+	input_unregister_device(my_input);
 	
 	gpio_free(BUZZER_GPIO_NO);
 	free_irq(key1_irq_no, KEY1_DEVICE_NAME);
 	gpio_free(KEY1_GPIO_NO);
 	free_irq(key2_irq_no, KEY2_DEVICE_NAME);
 	gpio_free(KEY2_GPIO_NO);
+	
+	pr_info("End\n");
 }
 
-module_init(sample007_extint_init);
-module_exit(sample007_extint_exit);
+module_init(Sample007_EXTINT_Init);
+module_exit(Sample007_EXTINT_Exit);
