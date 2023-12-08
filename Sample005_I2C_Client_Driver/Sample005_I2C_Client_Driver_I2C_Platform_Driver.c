@@ -27,7 +27,7 @@ MODULE_DESCRIPTION("Sample005_I2C_Client_Driver_I2C_Platform_Driver");
 #define BME280_REG_ID	(0xD0)
 #define BME280_REG_DATA	(0xF7)
 
-static uint8_t obuf [] = {0xF7};
+static uint8_t obuf [] = {0xF4, 0x55, 0xF5, 0xAA};
 static uint8_t ibuf [10];
 
 struct of_device_id my_i2c_of_device_id_table [] = {
@@ -42,6 +42,7 @@ struct i2c_device_id my_i2c_device_id_table [] = {
 
 static int my_i2c_driver_probe (struct i2c_client * client, const struct i2c_device_id * id) {
 	int ret;
+	int i;
 	
 	pr_info("Begin\n");
 	
@@ -58,16 +59,21 @@ static int my_i2c_driver_probe (struct i2c_client * client, const struct i2c_dev
 	}
 	
 	// Testing001: Testing Of i2c_master_send()
-	//ret = i2c_master_send(client, obuf, 1);
-	//pr_info("i2c_master_send: %d\n", ret);
+	ret = i2c_master_send(client, obuf, 4);
+	pr_info("i2c_master_send: %d\n", ret);
 	
 	// Testing002: Testing Of i2c_master_recv()
-	//for (i=0; i<10; i++) pr_info("ibuf[%02d] = 0x%02X\n", i, ibuf[i]);
-	//ret = i2c_master_recv(client, ibuf, 8);
-	//pr_info("i2c_master_recv: %d\n", ret);
-	//for (i=0; i<10; i++) pr_info("ibuf[%02d] = 0x%02X\n", i, ibuf[i]);
+	for (i=0; i<10; i++) pr_info("ibuf[%02d] = 0x%02X\n", i, ibuf[i]);
+	ret = i2c_master_send(client, obuf, 1);
+	ret = i2c_master_recv(client, ibuf, 2);
+	pr_info("i2c_master_recv: %d\n", ret);
+	for (i=0; i<10; i++) pr_info("ibuf[%02d] = 0x%02X\n", i, ibuf[i]);
 	
 	// Testing003: Testing Of i2c_transfer
+	obuf[0] = 0xE0;
+	obuf[1] = 0xB6;
+	ret = i2c_master_send(client, obuf, 2);
+	obuf[0] = 0xF7;
 	struct i2c_msg msg_i2c [] = {
 		{
 			.addr = BME280_ADDRESS,
